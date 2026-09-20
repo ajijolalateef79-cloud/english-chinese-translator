@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English → Chinese Translator</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .app {
+      max-width: 500px;
+      margin: 30px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 25px;
+    }
+
+    button {
+      border: none;
+      border-radius: 50px;
+      padding: 18px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      margin: 15px;
+    }
+
+    #start {
+      background: #111;
+      color: white;
+    }
+
+    #speak {
+      background: #e0e0e0;
+    }
+
+    .box {
+      text-align: left;
+      background: #f7f7f7;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
+      min-height: 60px;
+    }
+
+    .label {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <h1>English → Chinese</h1>
+
+  <p>Speak English and hear it in Mandarin.</p>
+
+  <button id="start">🎤 Speak English</button>
+
+  <div class="box">
+    <div class="label">English</div>
+    <div id="english">Waiting...</div>
+  </div>
+
+  <div class="box">
+    <div class="label">Chinese</div>
+    <div id="chinese">Waiting...</div>
+  </div>
+
+  <button id="speak">🔊 Speak Chinese</button>
+
+</div>
+
+<script>
+
+const startButton = document.getElementById("start");
+const speakButton = document.getElementById("speak");
+
+const englishText = document.getElementById("english");
+const chineseText = document.getElementById("chinese");
+
+let recognition;
+
+if ("webkitSpeechRecognition" in window) {
+
+  recognition = new webkitSpeechRecognition();
+
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onstart = function() {
+    startButton.textContent = "🎤 Listening...";
+  };
+
+  recognition.onresult = function(event) {
+
+    const text = event.results[0][0].transcript;
+
+    englishText.textContent = text;
+
+    // Temporary demonstration translation.
+    // We will replace this with real AI translation next.
+    chineseText.textContent =
+      "这里将显示中文翻译";
+
+    startButton.textContent = "🎤 Speak English";
+  };
+
+  recognition.onerror = function(event) {
+    englishText.textContent =
+      "Microphone error: " + event.error;
+
+    startButton.textContent = "🎤 Speak English";
+  };
+
+  recognition.onend = function() {
+    startButton.textContent = "🎤 Speak English";
+  };
+
+  startButton.onclick = function() {
+    recognition.start();
+  };
+
+} else {
+
+  englishText.textContent =
+    "Speech recognition is not supported in this browser.";
+}
+
+
+speakButton.onclick = function() {
+
+  const text = chineseText.textContent;
+
+  if (!text || text === "Waiting..." ||
+      text === "这里将显示中文翻译") {
+    alert("No Chinese translation yet.");
+    return;
+  }
+
+  const speech = new SpeechSynthesisUtterance(text);
+
+  speech.lang = "zh-CN";
+
+  window.speechSynthesis.speak(speech);
+};
+
+</script>
+
+</body>
+</html>
+
